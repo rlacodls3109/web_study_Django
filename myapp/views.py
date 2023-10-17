@@ -6,28 +6,42 @@ topics = [
 {'id':3, 'title':'Model', 'body':'Model is ..'},
 ]
 
-#클라이언트로 정보를 전송하기 위한 함수
-def index(request): 
+def HTMLTemplete(articletag):
     global topics # 리스트 사용을 위해 global 변수로 선언해야 함
     ol = ''
     for topic in topics:
-        ol += f'<li>{topic["title"]}</li>'
-    return HttpResponse(f'''
+        ol += f'<li><a href="/read/{topic["id"]}">{topic["title"]}</a></li>'
+    return(f'''
         <html>
         <body>
-            <h1>Django</h1>
+            <h1><a href = "/">Django</a></h1>
             <ol>
                 {ol}
             </ol>
-            <h2>Welcome</h2>
-            Hello,Django
+            {articletag}
         </body>
         </html>             
                         
     ''')
 
+#클라이언트로 정보를 전송하기 위한 함수
+def index(request): 
+    article = '''
+    <h2>Welcome</h2>
+    Hello, Django
+    '''
+    return HttpResponse(HTMLTemplete(article))
+
 def create(request): 
     return HttpResponse('create!')
 
-def read(request, id): 
-    return HttpResponse('Read! '+ id)
+def read(request, id): #read 쪽도 똑같은 HTML 코드를 공유한다.
+    article=''
+
+    for topic in topics:
+        if topic["id"] == int(id):
+            article = f'''
+            <h2>{topic["title"]}</h2>
+            {topic["body"]}
+            '''
+    return HttpResponse(HTMLTemplete(article))
